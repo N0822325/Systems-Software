@@ -8,6 +8,8 @@ public class WSPServer {
 
     public static void main(String[] args) throws IOException  {  
         
+        new ServerGUI().setVisible(true);
+        
         WSPServer obj = new WSPServer();
         obj.run(args);
         
@@ -61,15 +63,15 @@ public class WSPServer {
             {
                 // socket object to receive incoming client requests 
                 socket = server.accept();
-
+                
                 System.out.println("A new " + type + " client is connected : " + socket); 
 
                 DataInputStream DIS = new DataInputStream(socket.getInputStream()); 
                 DataOutputStream DOS = new DataOutputStream(socket.getOutputStream()); 
 
-                System.out.println("Assigning new thread for this " + type + " client"); 
+                System.out.println("Assigning new thread for this " + type + " client");
 
-                Thread t = new ClientHandler(socket, DIS, DOS); 
+                Thread t = new ClientHandler(socket, DIS, DOS);
 
                 t.start();
             }
