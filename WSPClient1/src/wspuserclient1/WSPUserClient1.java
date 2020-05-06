@@ -3,14 +3,13 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package wspclient2;
+package wspuserclient1;
 
 import java.net.*; 
 import java.io.*; 
 import java.util.Scanner;
 
-public class WSPClient2 {
-
+public class WSPUserClient1 {
 
  public static void main(String[] args) throws IOException  
     { 
@@ -60,17 +59,18 @@ public class WSPClient2 {
         } 
     } 
 } 
-    
-    
+
+
 /*    public static void main(String[] args) throws IOException {
         
         InetAddress address = InetAddress.getByName("localhost");
         Socket server = new Socket(address,9090);
         
         PrintWriter outToServer = new PrintWriter(server.getOutputStream());
-        outToServer.println("Client two says Hello");
+        outToServer.println("Client one says Hello");
         outToServer.flush();
-    
+
     }
+    
 }
 */
