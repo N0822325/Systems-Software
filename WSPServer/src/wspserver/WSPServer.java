@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package wspserver;
 
 import java.net.*; 
@@ -11,67 +6,85 @@ import java.io.*;
 
 public class WSPServer {
 
-    /**
-     * @param args the command line arguments
-     */
+    public static void main(String[] args) throws IOException  {  
+        
+        WSPServer obj = new WSPServer();
+        obj.run(args);
+        
+    }
     
-    public static void main(String[] args) throws IOException {
+    public void run (String[] args) throws IOException {
         
-        ServerSocket server = new ServerSocket(9090);
+        // Search for users
+        Runnable r = new SearchSocket(9090);
+        new Thread(r).start();
         
-        System.out.println("Server Online");
+        // Search for stations
+        Runnable r2 = new SearchSocket(9091);
+        new Thread(r2).start();
+        
+    }
+    
+    
+    // Thread creator
+    public class SearchSocket implements Runnable {
+        
+        int socketNumber;
+        
+        public SearchSocket(int socketNumber_){
+            socketNumber = socketNumber_;
+        }
+        
+        public void run() {
+            try{
+                connect(socketNumber);
+            }
+            catch (Exception e){
+                
+            }
+        }
+        
+    }
+    
+    
+    public void connect(int socketNumber) throws IOException {
+        
+        String type = (socketNumber == 9090)? "User" : "Weather Station";
+        
+        ServerSocket server = new ServerSocket(socketNumber);
+        System.out.println(type + " Server Online");
         
         while (true) {
-            Socket s = null;
-            
+            Socket socket = null;
+
             try
             {
                 // socket object to receive incoming client requests 
-                s = server.accept(); 
-                  
-                System.out.println("A new client is connected : " + s); 
-                  
-                // obtaining input and out streams 
-                DataInputStream dis = new DataInputStream(s.getInputStream()); 
-                DataOutputStream dos = new DataOutputStream(s.getOutputStream()); 
-                  
-                System.out.println("Assigning new thread for this client"); 
-  
-                // create a new thread object 
-                Thread t = new ClientHandler(s, dis, dos); 
-  
-                // Invoking the start() method 
+                socket = server.accept();
+
+                System.out.println("A new " + type + " client is connected : " + socket); 
+
+                DataInputStream DIS = new DataInputStream(socket.getInputStream()); 
+                DataOutputStream DOS = new DataOutputStream(socket.getOutputStream()); 
+
+                System.out.println("Assigning new thread for this " + type + " client"); 
+
+                Thread t = new ClientHandler(socket, DIS, DOS); 
+
                 t.start();
             }
             catch (Exception e){
-                s.close();
+                socket.close();
                 e.printStackTrace();
             }
+
         }
     }
+
     
+
+            
 }
-
-
+        
     
-/*    public static void main(String[] args) throws IOException {
-        
-        ServerSocket server = new ServerSocket(9090);
-        
-        System.out.println("Server Online");
-        
-        while (true) {
-                Socket client = server.accept();
-                System.out.println("Client Connected");
-                
-                InputStreamReader in = new InputStreamReader(client.getInputStream());
-                BufferedReader bf = new BufferedReader(in);
-                
-                String str = bf.readLine();
-                System.out.println("client: "+ str);
-        }
 
-    }
-    
-}
-*/

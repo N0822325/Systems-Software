@@ -1,13 +1,10 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package wspclient1;
 
 import java.net.*; 
 import java.io.*; 
 import java.util.Scanner;
+
+// User Client 
 
 public class WSPClient1 {
 
@@ -21,7 +18,7 @@ public class WSPClient1 {
             InetAddress ip = InetAddress.getByName("localhost"); 
       
             // establish the connection with server port 9090 
-            Socket s = new Socket(ip, 9090); 
+            Socket s = new Socket(ip, 9090);
       
             // obtaining input and out streams 
             DataInputStream dis = new DataInputStream(s.getInputStream()); 
@@ -59,18 +56,3 @@ public class WSPClient1 {
         } 
     } 
 } 
-
-
-/*    public static void main(String[] args) throws IOException {
-        
-        InetAddress address = InetAddress.getByName("localhost");
-        Socket server = new Socket(address,9090);
-        
-        PrintWriter outToServer = new PrintWriter(server.getOutputStream());
-        outToServer.println("Client one says Hello");
-        outToServer.flush();
-
-    }
-    
-}
-*/

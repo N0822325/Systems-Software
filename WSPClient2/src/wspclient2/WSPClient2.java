@@ -1,18 +1,14 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package wspclient2;
 
 import java.net.*; 
 import java.io.*; 
 import java.util.Scanner;
 
+// Weather Station Client
+
 public class WSPClient2 {
 
-
- public static void main(String[] args) throws IOException  
+    public static void main(String[] args) throws IOException  
     { 
         try
         { 
@@ -21,56 +17,40 @@ public class WSPClient2 {
             // getting localhost ip 
             InetAddress ip = InetAddress.getByName("localhost"); 
       
-            // establish the connection with server port 9090 
-            Socket s = new Socket(ip, 9090); 
+            // establish the connection with server port 9091 
+            Socket socket = new Socket(ip, 9091);
       
-            // obtaining input and out streams 
-            DataInputStream dis = new DataInputStream(s.getInputStream()); 
-            DataOutputStream dos = new DataOutputStream(s.getOutputStream()); 
+            DataInputStream DIS = new DataInputStream(socket.getInputStream()); 
+            DataOutputStream DOS = new DataOutputStream(socket.getOutputStream()); 
       
-            // the following loop performs the exchange of 
-            // information between client and client handler 
+            // exchanges information between client and client handler 
             while (true)  
             { 
-                System.out.println(dis.readUTF()); 
+                System.out.println(DIS.readUTF()); 
                 String tosend = scn.nextLine(); 
-                dos.writeUTF(tosend); 
+                DOS.writeUTF(tosend); 
                   
                 // If client sends exit,close this connection  
                 // and then break from the while loop 
                 if(tosend.equals("Exit")) 
                 { 
-                    System.out.println("Closing this connection : " + s); 
-                    s.close(); 
+                    System.out.println("Closing this connection : " + socket); 
+                    socket.close(); 
                     System.out.println("Connection closed"); 
                     break; 
                 } 
                   
                 // printing date or time as requested by client 
-                String received = dis.readUTF(); 
+                String received = DIS.readUTF(); 
                 System.out.println(received); 
             } 
               
             // closing resources 
             scn.close(); 
-            dis.close(); 
-            dos.close(); 
+            DIS.close(); 
+            DOS.close(); 
         }catch(Exception e){ 
             e.printStackTrace(); 
         } 
     } 
 } 
-    
-    
-/*    public static void main(String[] args) throws IOException {
-        
-        InetAddress address = InetAddress.getByName("localhost");
-        Socket server = new Socket(address,9090);
-        
-        PrintWriter outToServer = new PrintWriter(server.getOutputStream());
-        outToServer.println("Client two says Hello");
-        outToServer.flush();
-    
-    }
-}
-*/
