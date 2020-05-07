@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package wspserver;
 
 import java.net.*; 
@@ -10,74 +5,79 @@ import java.io.*;
 import java.text.*; 
 import java.util.*;
 
-class ClientHandler extends Thread  
-{ 
-    DateFormat fordate = new SimpleDateFormat("yyyy/MM/dd"); 
-    DateFormat fortime = new SimpleDateFormat("hh:mm:ss"); 
-    final DataInputStream dis; 
-    final DataOutputStream dos; 
-    final Socket s; 
-      
-  
-    // Constructor 
+import javax.swing.JOptionPane;
+import javax.swing.JDialog;
+
+class ClientHandler extends Thread
+{
+    DateFormat fordate = new SimpleDateFormat("yyyy/MM/dd");
+    DateFormat fortime = new SimpleDateFormat("hh:mm:ss");
+    final DataInputStream dis;
+    final DataOutputStream dos;
+    final Socket s;
+    
+    int ID = -1;
+
+    // Constructor
     public ClientHandler(Socket s, DataInputStream dis, DataOutputStream dos)  
     { 
-        this.s = s; 
-        this.dis = dis; 
-        this.dos = dos; 
+        this.s = s;
+        this.dis = dis;
+        this.dos = dos;
     } 
   
     @Override
-    public void run()  
-    { 
-        String received; 
-        String toreturn; 
-        while (true)  
-        { 
-            try { 
-  
-                // Ask user what he wants 
-                dos.writeUTF("What do you want?[Date | Time]..\n"+ 
-                            "Type Exit to terminate connection."); 
-                  
-                // receive the answer from client 
-                received = dis.readUTF(); 
-                  
-                if(received.equals("Exit")) 
-                {  
-                    System.out.println("Client " + this.s + " sends exit..."); 
-                    System.out.println("Closing this connection."); 
-                    this.s.close(); 
-                    System.out.println("Connection closed"); 
-                    break; 
-                } 
-                  
-                // creating Date object 
-                Date date = new Date(); 
-                  
-                // write on output stream based on the 
-                // answer from the client 
-                switch (received) { 
-                  
-                    case "Date" : 
-                        toreturn = fordate.format(date); 
-                        dos.writeUTF(toreturn); 
-                        break; 
-                          
-                    case "Time" : 
-                        toreturn = fortime.format(date); 
-                        dos.writeUTF(toreturn); 
-                        break; 
-                          
-                    default: 
-                        dos.writeUTF("Invalid input"); 
-                        break; 
-                } 
-            } catch (IOException e) { 
-                e.printStackTrace(); 
-            } 
-        } 
-          
+    public void run()
+    {
+        while (true)
+        {
+            try {
+                
+                String received = dis.readUTF();
+                
+                // Login
+                if(received.equals("Register") || received.equals("Login")){
+                     
+                        File file = new File(dis.readUTF() + ".csv");
+                        if (!file.exists()) { file.createNewFile(); }
+                        
+                        String user = dis.readUTF();
+                        String pass = dis.readUTF();
+                        String[] loginInfo = {user, pass};
+                        
+                        
+                        if(received.equals("Register"))
+                        {
+                            
+                            if(!checkForUser(file,user))
+                                { writeCSV(file,user,pass); }
+                            else
+                            { 
+                                JOptionPane optionPane = new JOptionPane();
+                                optionPane.setMessage("User Already Exists");
+                                JDialog dialog = optionPane.createDialog("Registry Error");
+                                dialog.setAlwaysOnTop(true);
+                                dialog.setVisible(true);
+                                
+                                dos.writeBoolean(false);
+                                continue;
+                            }
+                        } 
+                       
+                        dos.writeBoolean(checkPass(file, loginInfo));
+                    
+                }
+                
+                // 
+                
+            
+            }
+            catch(IOException e) {
+                e.printStackTrace();
+                break;
+            }
+            
+        }
         try
         { 
             // closing resources 
@@ -87,5 +87,68 @@ class ClientHandler extends Thread
         }catch(IOException e){ 
             e.printStackTrace(); 
         } 
-    } 
+    }
+    
+    
+    private boolean checkForUser(File file, String input) throws IOException  {
+        
+        String row;
+        BufferedReader csvReader = new BufferedReader(new FileReader(file));
+
+        while ((row = csvReader.readLine()) != null) {
+            String[] data = row.split(",");
+
+            if(data[0].equals(input)) { return true; }
+        }
+        
+        return false;
+        
+    }
+    
+    private boolean checkPass(File file, String[] input) throws IOException  {
+        
+        String row;
+        BufferedReader csvReader = new BufferedReader(new FileReader(file));
+
+        while ((row = csvReader.readLine()) != null) {
+            String[] data = row.split(",");
+
+            // Check Username
+            if(data[0].equals(input[0])) {
+
+                // Check Password
+                if(data[1].equals(input[1])){ return true; }
+            }
+        }
+        
+        return false;
+        
+    }
+    
+    public String[] readCSV(File file, String input) throws IOException  {
+        
+        String row;
+        BufferedReader csvReader = new BufferedReader(new FileReader(file));
+
+        while ((row = csvReader.readLine()) != null) {
+            String[] data = row.split(",");
+
+            if(data[0] == input) { return data; }
+        }
+        
+        return null;
+        
+    }
+    
+    public void writeCSV(File file, String ID, String Pass) throws IOException {
+        
+        FileWriter csvWriter = new FileWriter(file, true);
+               
+        csvWriter.append(ID);
+        csvWriter.append("," + Pass);
+        csvWriter.append("\n");
+        
+        csvWriter.close();
+    }
+    
 } 
