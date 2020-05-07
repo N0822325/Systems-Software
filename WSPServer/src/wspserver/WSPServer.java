@@ -64,6 +64,7 @@ public class WSPServer {
                 // socket object to receive incoming client requests 
                 socket = server.accept();
                 
+                
                 System.out.println("A new " + type + " client is connected : " + socket); 
 
                 DataInputStream DIS = new DataInputStream(socket.getInputStream()); 
@@ -82,8 +83,8 @@ public class WSPServer {
 
         }
     }
-
     
+
 
             
 }
