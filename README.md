@@ -5,15 +5,15 @@
 
 # main list
 
-gui
+~~gui~~
 
-user weather distinguish
+~~user weather distinguish~~
 
 weather rng numbers
 
-sql database
+~~text database~~
 
-connect using password
+~~connect using password~~
 
 view data
 
@@ -21,19 +21,19 @@ view data
 
 # list
 
-server
+~~server~~
 
-user client / weather station client - need to know the difference between the two
+~~user client / weather station client - need to know the difference between the two~~
 
-database for server to get user info for login
+~~database for server to get user info for login~~
 
 clients connect auto
 
-register id
+~~register id~~
 
 client upload data - gps temps humidity
 
-user client login using text file based database
+~~user client login using text file based database~~
 
 get list of connected weatherstations to download data on request
 
@@ -45,7 +45,7 @@ connecting with handshake procedure
 
 continous data stream from sensors (using rng numbers)
 
-connect using login password protected
+~~connect using login password protected~~
 
 auto update
 
