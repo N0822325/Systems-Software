@@ -43,9 +43,9 @@ public class WSPClient1 {
 
                 String[] Options = {"Retry","Exit"};
 
-                    int response = JOptionPane.showOptionDialog(null, "Server is Offline", "Connection Error",
-                        JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE,
-                        null, Options, Options[0]);
+                int response = JOptionPane.showOptionDialog(null, "Server is Offline", "Connection Error",
+                    JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE,
+                    null, Options, Options[0]);
 
                 run = (response == 0)? true : false;
             } 
