@@ -71,10 +71,17 @@ public class WSPServer {
                 DataOutputStream DOS = new DataOutputStream(socket.getOutputStream()); 
 
                 System.out.println("Assigning new thread for this " + type + " client");
-
-                Thread t = new ClientHandler(socket, DIS, DOS);
-
-                t.start();
+                
+                if (type.equals ("User"))
+                {
+                    Thread t = new ClientHandler(socket, DIS, DOS);
+                    t.start();
+                }
+                else
+                {
+                    Thread t = new WSHandler(socket, DIS, DOS);
+                    t.start();
+                }
             }
             catch (Exception e){
                 socket.close();

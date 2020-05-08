@@ -14,6 +14,7 @@ public class WSPClient2 {
     public static void main(String[] args) throws IOException  
     {
         boolean run = true;
+        String id = "F1";
         while(run){
 
             try
@@ -31,6 +32,8 @@ public class WSPClient2 {
                 DataOutputStream dos = new DataOutputStream(s.getOutputStream());
 
                 // Setup gui form
+                dos.writeUTF("ID");
+                dos.writeUTF(id);
                 
 
                 run = false;
