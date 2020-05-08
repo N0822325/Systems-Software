@@ -15,41 +15,54 @@ import javax.swing.ListModel;
 public class ServerGUI extends javax.swing.JFrame {
 
     ArrayList<WSConnectedInfo> wsconnectedinfo;
+    ArrayList<UConnectedInfo> uconnectedinfo;
+    String [] connectedWSArray;
+    String [] connectedUArray;
+    int [] a = new int[20];
     
     public ServerGUI() {
         initComponents();
         
         wsconnectedinfo = new ArrayList<WSConnectedInfo>();
+        uconnectedinfo = new ArrayList<UConnectedInfo>();
         populateArrayList();
         
-        String [] connectedWSArray = new String[wsconnectedinfo.size()];
+        connectedWSArray = new String[wsconnectedinfo.size()];
+        connectedUArray = new String[uconnectedinfo.size()];
         
         for (int i = 0 ; i < wsconnectedinfo.size() ; i++)
+        {
+            connectedWSArray[i] = wsconnectedinfo.get(i).getWsid() + ": " + wsconnectedinfo.get(i).getWssocket();
+        }
+
+        DefaultListModel<String> newList1 = new DefaultListModel<String>();
+
+        for(String s : connectedWSArray)
             {
-                connectedWSArray[i] = wsconnectedinfo.get(i).getWsid() + ": " + wsconnectedinfo.get(i).getWssocket();
+                newList1.addElement(s);
             }
         
-//        jList2.setModel(new javax.swing.AbstractListModel<String>() {
-//            String[] connectedWSArray;
-//            public int getSize() { return connectedWSArray.length; }
-//            public String getElementAt(int i) { return connectedWSArray[i]; }
-//        });
+        jList2.setModel(newList1);
+        
+        
+        for (int i = 0 ; i < uconnectedinfo.size() ; i++)
+        {
+            connectedUArray[i] = uconnectedinfo.get(i).getUid();
+        }
 
-                DefaultListModel<String> newList = new DefaultListModel<String>();
-//                ListModel<String> existing = jList2.getModel();
-//                for(int i = 0; i < existing.getSize(); i++){
-//                    newList.addElement(existing.getElementAt(i));
-//                }
-                for(String s : connectedWSArray)
-                {
-                    newList.addElement(s);
-                }
-                jList2.setModel(newList);
+        DefaultListModel<String> newList2 = new DefaultListModel<String>();
+
+        for(String s : connectedUArray)
+            {
+                newList2.addElement(s);
+            }
         
+        jList3.setModel(newList2);
         
+        showlist();
     }
     
-    private void populateArrayList()
+    public void populateArrayList()
     {
         try
         {    
@@ -87,8 +100,44 @@ public class ServerGUI extends javax.swing.JFrame {
         {
             JOptionPane.showMessageDialog(null, e.getMessage());
         }
+        
+        try
+        {    
+            {
+                File file = new File("ConnectedU.dat");
+                if (!file.exists()) { file.createNewFile(); }
+            }
+            
+            
+            FileInputStream file = new FileInputStream("ConnectedU.dat");
+            ObjectInputStream inputFile = new ObjectInputStream(file);
+            
+            boolean endOfFile = false;
+            
+            while(!endOfFile)
+            {
+                try
+                {
+                    uconnectedinfo.add((UConnectedInfo) inputFile.readObject());
+                }
+                catch(EOFException e)
+                {
+                    endOfFile = true;     
+                }
+                catch (Exception f)
+                {
+                    JOptionPane.showMessageDialog(null, f.getMessage());
+                }
+                
+            }
+            
+            inputFile.close();
+        }
+        catch (IOException e)
+        {
+            JOptionPane.showMessageDialog(null, e.getMessage());
+        }
     }
-
 
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -97,30 +146,19 @@ public class ServerGUI extends javax.swing.JFrame {
         jPanel1 = new javax.swing.JPanel();
         jPanel2 = new javax.swing.JPanel();
         jLabel2 = new javax.swing.JLabel();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        jList1 = new javax.swing.JList<>();
         jSeparator1 = new javax.swing.JSeparator();
         jLabel3 = new javax.swing.JLabel();
         jScrollPane3 = new javax.swing.JScrollPane();
         jList2 = new javax.swing.JList<>();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        jList3 = new javax.swing.JList<>();
+        list1 = new java.awt.List();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Server");
         setResizable(false);
 
         jLabel2.setText("Connected Clients");
-
-        jList1.addAncestorListener(new javax.swing.event.AncestorListener() {
-            public void ancestorAdded(javax.swing.event.AncestorEvent evt) {
-                jList1AncestorAdded(evt);
-            }
-            public void ancestorMoved(javax.swing.event.AncestorEvent evt) {
-            }
-            public void ancestorRemoved(javax.swing.event.AncestorEvent evt) {
-            }
-        });
-        jScrollPane1.setViewportView(jList1);
-        jList1.getAccessibleContext().setAccessibleName("JList");
 
         jSeparator1.setOrientation(javax.swing.SwingConstants.VERTICAL);
 
@@ -134,16 +172,29 @@ public class ServerGUI extends javax.swing.JFrame {
         });
         jScrollPane3.setViewportView(jList2);
 
+        jList3.setModel(new javax.swing.AbstractListModel<String>() {
+            String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
+            public int getSize() { return strings.length; }
+            public String getElementAt(int i) { return strings[i]; }
+        });
+        jScrollPane2.setViewportView(jList3);
+
+        list1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                list1ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
-                .addGap(14, 14, 14)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel2)
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 91, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel2Layout.createSequentialGroup()
@@ -151,7 +202,9 @@ public class ServerGUI extends javax.swing.JFrame {
                         .addComponent(jLabel3)
                         .addContainerGap(191, Short.MAX_VALUE))
                     .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGap(54, 54, 54)
+                        .addComponent(list1, javax.swing.GroupLayout.PREFERRED_SIZE, 303, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jScrollPane3)
                         .addContainerGap())))
         );
@@ -159,16 +212,22 @@ public class ServerGUI extends javax.swing.JFrame {
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addGap(11, 11, 11)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addComponent(jLabel2)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 516, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(jScrollPane2))
                     .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel2Layout.createSequentialGroup()
                         .addComponent(jLabel3)
-                        .addGap(11, 11, 11)
-                        .addComponent(jScrollPane3)))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel2Layout.createSequentialGroup()
+                                .addGap(11, 11, 11)
+                                .addComponent(jScrollPane3))
+                            .addGroup(jPanel2Layout.createSequentialGroup()
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 223, Short.MAX_VALUE)
+                                .addComponent(list1, javax.swing.GroupLayout.PREFERRED_SIZE, 174, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(130, 130, 130)))))
+                .addContainerGap())
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jSeparator1))
@@ -201,9 +260,9 @@ public class ServerGUI extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jList1AncestorAdded(javax.swing.event.AncestorEvent evt) {//GEN-FIRST:event_jList1AncestorAdded
+    private void list1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_list1ActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jList1AncestorAdded
+    }//GEN-LAST:event_list1ActionPerformed
 
 
     public static void main(String args[]) {
@@ -237,16 +296,27 @@ public class ServerGUI extends javax.swing.JFrame {
             }
         });
     }
+    
+    public void showlist()
+    {
+        list1.removeAll();
+        for(int k = 0 ; k < a.length; k++)
+        {
+            int id = a[k];
+            list1.add(Integer.toString(id));
+        }
+    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
-    private javax.swing.JList<String> jList1;
     private javax.swing.JList<String> jList2;
+    private javax.swing.JList<String> jList3;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
-    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JSeparator jSeparator1;
+    private java.awt.List list1;
     // End of variables declaration//GEN-END:variables
 }

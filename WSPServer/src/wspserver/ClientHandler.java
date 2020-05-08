@@ -15,6 +15,9 @@ class ClientHandler extends Thread
     final DataInputStream dis;
     final DataOutputStream dos;
     final Socket s;
+    public ArrayList<UConnectedInfo> uconnectedinfo;
+    
+    
 
     // Constructor
     public ClientHandler(Socket s, DataInputStream dis, DataOutputStream dos)  
@@ -22,6 +25,8 @@ class ClientHandler extends Thread
         this.s = s;
         this.dis = dis;
         this.dos = dos;
+        populateArrayList();
+        uconnectedinfo = new ArrayList<UConnectedInfo>();
     } 
   
     @Override
@@ -169,7 +174,22 @@ class ClientHandler extends Thread
             if(data[0].equals(input[0])) {
 
                 // Check Password
-                if(data[1].equals(input[1])){ csvReader.close(); return true; }
+                if(data[1].equals(input[1]))
+                { 
+                    
+                    csvReader.close(); 
+                    
+                    UConnectedInfo uconnectedinfoitems = new UConnectedInfo(input[1]);
+                        
+                    uconnectedinfo.add(uconnectedinfoitems); 
+                        
+                    saveCurrentWStoFile();
+                    
+                    return true; 
+
+
+                    
+                }
             }
         }
         
@@ -259,6 +279,66 @@ class ClientHandler extends Thread
         writer.close();
         
         return true;
+    }
+    
+     private void populateArrayList()
+    {
+        try
+        {    
+            {
+                File file = new File("ConnectedU.dat");
+                if (!file.exists()) { file.createNewFile(); }
+            }
+            
+            
+            FileInputStream file = new FileInputStream("ConnectedU.dat");
+            ObjectInputStream inputFile = new ObjectInputStream(file);
+            
+            boolean endOfFile = false;
+            
+            while(!endOfFile)
+            {
+                try
+                {
+                    uconnectedinfo.add((UConnectedInfo) inputFile.readObject());
+                }
+                catch(EOFException e)
+                {
+                    endOfFile = true;     
+                }
+                catch (Exception f)
+                {
+                    JOptionPane.showMessageDialog(null, f.getMessage());
+                }
+                
+            }
+            
+            inputFile.close();
+        }
+        catch (IOException e)
+        {
+            JOptionPane.showMessageDialog(null, e.getMessage());
+        }
+    }
+     
+    private void saveCurrentWStoFile()
+    {
+        try
+        {    
+            FileOutputStream file = new FileOutputStream("ConnectedU.dat");
+            ObjectOutputStream outputFile = new ObjectOutputStream(file);
+            
+            for (int i = 0 ; i < uconnectedinfo.size() ; i++)
+            {
+                outputFile.writeObject(uconnectedinfo.get(i));
+            }
+            
+            outputFile.close();
+        }
+        catch (IOException e)
+        {
+            JOptionPane.showMessageDialog(null, e.getMessage());
+        }
     }
     
 } 

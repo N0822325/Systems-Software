@@ -49,6 +49,8 @@ public class WSPServer {
     }
     
     
+    
+    
     public void connect(int socketNumber) throws IOException {
         
         String type = (socketNumber == 9090)? "User" : "Weather Station";

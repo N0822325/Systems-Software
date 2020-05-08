@@ -26,6 +26,7 @@ class WSHandler extends Thread
         this.dis = dis;
         this.dos = dos;
         wsconnectedinfo = new ArrayList<WSConnectedInfo>();
+        populateArrayList();
     } 
     
      @Override
