@@ -7,7 +7,7 @@ import java.net.*;
 import java.io.*; 
 import java.util.Scanner;
 
-public class WebLogin extends javax.swing.JFrame {
+public class WLogin extends javax.swing.JFrame {
     
     Boolean newUser = false;
     
@@ -15,7 +15,7 @@ public class WebLogin extends javax.swing.JFrame {
     DataInputStream dis;
     DataOutputStream dos;
 
-    public WebLogin(String TYPE, DataInputStream DIS, DataOutputStream DOS) {
+    public WLogin(String TYPE, DataInputStream DIS, DataOutputStream DOS) {
         type = TYPE;
         dis = DIS;
         dos = DOS;
@@ -67,7 +67,7 @@ public class WebLogin extends javax.swing.JFrame {
             }
         });
 
-        jLabel3.setText("Web Login");
+        jLabel3.setText("Wether Station Login");
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -83,17 +83,16 @@ public class WebLogin extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 153, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jPasswordField1, javax.swing.GroupLayout.PREFERRED_SIZE, 153, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addComponent(jPasswordField1, javax.swing.GroupLayout.PREFERRED_SIZE, 153, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addGap(9, 9, 9)
+                                .addComponent(jLabel3))))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGap(0, 0, Short.MAX_VALUE)
                         .addComponent(jButton1)
                         .addGap(18, 18, 18)
                         .addComponent(jRadioButton1)))
                 .addContainerGap(70, Short.MAX_VALUE))
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(136, 136, 136)
-                .addComponent(jLabel3)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -156,7 +155,7 @@ public class WebLogin extends javax.swing.JFrame {
             dos.writeUTF(pass);
 
             if(dis.readBoolean()) {
-                new WebClient(this,dis,dos).setVisible(true);
+                new WClient(this,dis,dos).setVisible(true);
                 setVisible(false);
             }
             else if(!newUser) {
