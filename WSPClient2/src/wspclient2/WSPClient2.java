@@ -31,7 +31,7 @@ public class WSPClient2 {
                 DataOutputStream dos = new DataOutputStream(s.getOutputStream());
 
                 // Setup gui form
-                new WLogin("ws",dis,dos).setVisible(true);
+                
 
                 run = false;
 

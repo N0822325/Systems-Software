@@ -169,7 +169,7 @@ public class UserLogin extends javax.swing.JFrame {
             dos.writeUTF(pass);
 
             if(dis.readBoolean()) {
-                new UserClient(user,dis,dos).setVisible(true);
+                new UserClient(this,user,dis,dos).setVisible(true);
                 setVisible(false);
             }
             else {

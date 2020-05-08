@@ -9,10 +9,7 @@ public class WClient extends javax.swing.JFrame {
     DataInputStream dis;
     DataOutputStream dos;
     
-    WLogin log;
-    
-    public WClient(WLogin LOG, DataInputStream DIS, DataOutputStream DOS) {
-        log = LOG;
+    public WClient(DataInputStream DIS, DataOutputStream DOS) {
         dis = DIS;
         dos = DOS;
         initComponents();
@@ -112,8 +109,7 @@ public class WClient extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        log.setVisible(true);
-        setVisible(false);
+        
     }//GEN-LAST:event_jButton1ActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
