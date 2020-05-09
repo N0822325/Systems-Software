@@ -1,8 +1,10 @@
 package wspclient1;
 
+import java.util.*;
 import java.net.*; 
 import java.io.*; 
 import java.util.Scanner;
+import java.util.concurrent.TimeUnit;
 import javax.swing.DefaultListModel;
 import javax.swing.JDialog;
 import javax.swing.JList;
@@ -16,6 +18,8 @@ public class UserClient extends javax.swing.JFrame {
     DataOutputStream dos;
     String id;
     
+    String selected = "123";
+
     public UserClient(UserLogin LOG, String ID, DataInputStream DIS, DataOutputStream DOS) throws IOException {
         log = LOG;
         id = ID;
@@ -27,8 +31,7 @@ public class UserClient extends javax.swing.JFrame {
         DefaultListModel<String> newList = new DefaultListModel<String>();
 
         dos.writeUTF(id);
-        
-        
+       
         do 
         {           
             String WS = dis.readUTF();
@@ -40,9 +43,68 @@ public class UserClient extends javax.swing.JFrame {
         
         WSList.setModel(newList);
         
+        
+        Runnable r = new MyRunnable();
+        new Thread(r).start();
     }
     
+    public class MyRunnable implements Runnable {
+
+
+        public MyRunnable() {
+            
+        }
+
+        public void run() {
+            try{
+               r(); 
+            }
+            catch (Exception e){
+                
+            }
+        }
+    }
     
+    private void r() throws IOException {
+        
+        while(true){
+            
+            try {
+                dos.writeUTF("Get Data");
+                dos.writeUTF(selected);
+                
+                
+                
+
+                if(!dis.readBoolean())
+                {
+       System.out.println(selected);
+                }           
+                else 
+                {
+//                    System.out.println(dis.readUTF());
+//                    System.out.println(dis.readUTF());
+//                    System.out.println(dis.readUTF());
+//                    System.out.println(dis.readUTF());
+                    FieldOutputBox.setText(dis.readUTF());
+                    TemperatureOutputBox.setText(dis.readUTF());
+                    CropOutputBox.setText(dis.readUTF());
+                    HumidityOutputBox.setText(dis.readUTF());
+                }
+                
+                
+                try { TimeUnit.SECONDS.sleep(10); }
+                catch (Exception e) {}
+                
+            }
+            catch(IOException e){}
+            
+            
+        }
+
+        
+    }
+
     
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -190,8 +252,8 @@ public class UserClient extends javax.swing.JFrame {
                                 .addComponent(jLabel7)
                                 .addGap(38, 38, 38))))
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(152, 152, 152)
-                        .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGap(142, 142, 142)
+                        .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 62, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
@@ -254,62 +316,45 @@ public class UserClient extends javax.swing.JFrame {
 
     private void WSAddBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_WSAddBtnActionPerformed
 
-        try {
-            
-            String station = WSAddTextBox.getText();
-            if (station.isBlank()) return;
-            
-            dos.writeUTF("Add Station");
-            
-            dos.writeUTF(id);
-            dos.writeUTF(station);
-
-            if (dis.readBoolean()){
-                DefaultListModel<String> newList = new DefaultListModel<String>();
-                ListModel<String> existing = WSList.getModel();
-                for(int i = 0; i < existing.getSize(); i++){
-                    newList.addElement(existing.getElementAt(i));
-                }
-                newList.addElement(station);
-                WSList.setModel(newList);
-            }
-            else{
-                
-                JOptionPane optionPane = new JOptionPane();
-                optionPane.setMessage("Weather Station is Already Added");
-                JDialog dialog = optionPane.createDialog("Inclusion Error");
-                dialog.setAlwaysOnTop(true);
-                dialog.setVisible(true);
-                
-            }
-        }
-        catch(IOException e){
-            e.printStackTrace();
-        }
+//        try {
+//            
+//            String station = WSAddTextBox.getText();
+//            if (station.isBlank()) return;
+//            
+//            dos.writeUTF("Add Station");
+//            
+//            dos.writeUTF(id);
+//            dos.writeUTF(station);
+//
+//            if (dis.readBoolean()){
+//                DefaultListModel<String> newList = new DefaultListModel<String>();
+//                ListModel<String> existing = WSList.getModel();
+//                for(int i = 0; i < existing.getSize(); i++){
+//                    newList.addElement(existing.getElementAt(i));
+//                }
+//                newList.addElement(station);
+//                WSList.setModel(newList);
+//            }
+//            else{
+//                
+//                JOptionPane optionPane = new JOptionPane();
+//                optionPane.setMessage("Weather Station is Already Added");
+//                JDialog dialog = optionPane.createDialog("Inclusion Error");
+//                dialog.setAlwaysOnTop(true);
+//                dialog.setVisible(true);
+//                
+//            }
+//        }
+//        catch(IOException e){
+//            e.printStackTrace();
+//        }
         
     }//GEN-LAST:event_WSAddBtnActionPerformed
 
     private void WSListValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_WSListValueChanged
-        String stationID = WSList.getSelectedValue();
+        selected = WSList.getSelectedValue();
         
-        try {
-            dos.writeUTF("Get Data");
-            dos.writeUTF(stationID);
-            
-            if(!dis.readBoolean())
-            {
-                
-            }           
-            else while(dis.available() > 0)
-            {
-                FieldOutputBox.setText(dis.readUTF());
-                CropOutputBox.setText(dis.readUTF());
-                TemperatureOutputBox.setText(dis.readUTF());
-                HumidityOutputBox.setText(dis.readUTF());
-            }
-            
-        }
-        catch(IOException e){}
+        
     }//GEN-LAST:event_WSListValueChanged
 
     private void WSAddTextBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_WSAddTextBoxActionPerformed
