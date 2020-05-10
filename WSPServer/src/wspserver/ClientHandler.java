@@ -78,6 +78,7 @@ class ClientHandler extends Thread
                     dos.writeBoolean(
                             appendCSV(file,ID,stationID)
                     );
+                    
                 }
                 
                 // Loading Weather Stations for User
@@ -96,10 +97,30 @@ class ClientHandler extends Thread
                     {
                         dos.writeUTF(data[i]);
                     }
-                    
-                    
-                  
+                
                 }
+                
+                // Loading All Weather Stations
+                else if (received.equals("All Stations")){
+                    
+                    String ID = dis.readUTF();
+                    
+                    File file = new File("ws.csv");
+                    if (!file.exists()) { file.createNewFile(); }
+                    
+                    List<String> data = readAll(file);
+                    
+                    dos.writeBoolean(data.size() > 0);
+                    
+                    //if (data.size() < 3){ dos.writeUTF(""); continue; }
+
+                    for(String s : data)
+                    {
+                        dos.writeUTF(s);
+                    }
+                
+                }
+                
                 
                 // Pass Data to User
                 else if (received.equals("Get Data")) {
@@ -110,6 +131,7 @@ class ClientHandler extends Thread
                     if (!file.exists()) { file.createNewFile(); }
                     
                     String[] Data = readCSV(file, stationID);
+                    
                     
                     if(Data == null) {
                         dos.writeBoolean(false);
@@ -194,6 +216,22 @@ class ClientHandler extends Thread
         
     }
     
+    private List<String> readAll(File file) throws IOException  {
+        
+        String row;
+        BufferedReader csvReader = new BufferedReader(new FileReader(file));
+
+        List<String> l = new ArrayList<String>();
+        
+        while ((row = csvReader.readLine()) != null) {
+            l.add(row);
+        }
+        
+        csvReader.close();
+        return l;
+        
+    }
+    
     private void writeCSV(File file, String ID, String Pass) throws IOException {
         
         FileWriter csvWriter = new FileWriter(file, true);
@@ -206,9 +244,7 @@ class ClientHandler extends Thread
     }
     
     private boolean appendCSV(File file, String ID, String[] WS) throws IOException {
-        
- 
-        
+   
         String oldLine = "";
       
         Scanner sc = new Scanner(file);
@@ -235,7 +271,6 @@ class ClientHandler extends Thread
             
             for(int i = 2; i < elements.length; i++)
             {
-                System.out.println(elements[i]);
                 if (current.equals(elements[i])) { add = false; }
             }
             

@@ -6,7 +6,8 @@ import java.io.*;
 
 public class WSPServer {
 
-    public static void main(String[] args) throws IOException  {  
+    public static void main(String[] args) throws IOException  {
+        (new File("WSData.csv")).delete();
         
         new ServerGUI().setVisible(true);
         
@@ -71,10 +72,17 @@ public class WSPServer {
                 DataOutputStream DOS = new DataOutputStream(socket.getOutputStream()); 
 
                 System.out.println("Assigning new thread for this " + type + " client");
-
-                Thread t = new ClientHandler(socket, DIS, DOS);
-
-                t.start();
+                
+                if (type.equals ("User"))
+                {
+                    Thread t = new ClientHandler(socket, DIS, DOS);
+                    t.start();
+                }
+                else
+                {
+                    Thread t = new WSHandler(socket, DIS, DOS);
+                    t.start();
+                }
             }
             catch (Exception e){
                 socket.close();
