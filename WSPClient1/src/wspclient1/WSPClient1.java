@@ -31,8 +31,9 @@ public class WSPClient1 {
                 DataOutputStream dos = new DataOutputStream(s.getOutputStream());
 
                 // Setup gui form
-                new UserLogin("user",dis,dos).setVisible(true);
-
+                new UserLogin("user",dis,dos).setVisible(true);;
+                
+                
                 run = false;
 
                 // closing resources 

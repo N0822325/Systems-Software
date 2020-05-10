@@ -3,6 +3,7 @@ package wspclient2;
 import java.net.*; 
 import java.io.*; 
 import java.util.Scanner;
+import java.util.*;
 
 import javax.swing.JOptionPane;
 import javax.swing.JDialog;
@@ -13,11 +14,13 @@ public class WSPClient2 {
 
     public static void main(String[] args) throws IOException  
     {
-        boolean run = true;
-        while(run){
-
+        
+        
+        
+        while(true){
+            
             try
-            { 
+            {
                 Scanner scn = new Scanner(System.in);
 
                 // getting localhost ip 
@@ -29,12 +32,13 @@ public class WSPClient2 {
                 // obtaining input and out streams 
                 DataInputStream dis = new DataInputStream(s.getInputStream()); 
                 DataOutputStream dos = new DataOutputStream(s.getOutputStream());
-
-                // Setup gui form
                 
-
-                run = false;
-
+                
+                
+                new WClient(dis,dos).setVisible(true);
+                
+                
+                break;
                 // closing resources 
                 //scn.close();
                 //dis.close();
@@ -47,21 +51,21 @@ public class WSPClient2 {
                     JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE,
                     null, Options, Options[0]);
                 
-                run = (response == 0)? true : false;
+                if(response == 1)
+                    { break; }
                     
             }
+            
+            
         } 
         
     }
     
     
     
-    public static int getX(){
-        int result = (int)(Math.random()*100);
-        return result;
-    }
+
     
-    
+
     
 }
 
