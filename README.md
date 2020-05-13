@@ -41,7 +41,7 @@
 
 ~~gui to display updated weatherstations~~
 
-~~connecting with handshake procedure ~~
+~~connecting with handshake procedure~~
 
 ~~continous data stream from sensors (using rng numbers)~~
 
