@@ -9,13 +9,13 @@
 
 ~~user weather distinguish~~
 
-weather rng numbers
+~~weather rng numbers~~
 
 ~~text database~~
 
 ~~connect using password~~
 
-view data
+~~view data~~
 
 
 
@@ -27,27 +27,27 @@ view data
 
 ~~database for server to get user info for login~~
 
-clients connect auto
+~~clients connect auto~~
 
 ~~register id~~
 
-client upload data - gps temps humidity
+~~client upload data - gps temps humidity~~
 
 ~~user client login using text file based database~~
 
-get list of connected weatherstations to download data on request
+~~get list of connected weatherstations to download data on request~~
 
-click on weatherstation from dropdown
+~~click on weatherstation from dropdown~~
 
-gui to display updated weatherstations
+~~gui to display updated weatherstations~~
 
-connecting with handshake procedure 
+~~connecting with handshake procedure ~~
 
-continous data stream from sensors (using rng numbers)
+~~continous data stream from sensors (using rng numbers)~~
 
 ~~connect using login password protected~~
 
-auto update
+~~auto update~~
 
 
 
