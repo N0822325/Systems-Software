@@ -4,7 +4,9 @@ import java.util.*;
 import java.net.*; 
 import java.io.*; 
 import java.util.Scanner;
+import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 import javax.swing.DefaultListModel;
 import javax.swing.JDialog;
 import javax.swing.JList;
@@ -18,6 +20,7 @@ public class UserClient extends javax.swing.JFrame {
     DataOutputStream dos;
     String id;
     
+    DataStreams DS = new DataStreams();
     String selected = "";
 
     public UserClient(UserLogin LOG, String ID, DataInputStream DIS, DataOutputStream DOS) throws IOException {
@@ -27,21 +30,9 @@ public class UserClient extends javax.swing.JFrame {
         dos = DOS;
         initComponents();
 
-        dos.writeUTF("Load Stations");
-        DefaultListModel<String> newList = new DefaultListModel<String>();
-
-        dos.writeUTF(id);
-       
-        do 
-        {           
-            String WS = dis.readUTF();
-            if(WS.isBlank()) { break; }
-            
-            newList.addElement(WS);
-            
-        } while(dis.available() > 0);
-        
-        WSList.setModel(newList);
+        DS.getStations(true);
+        DS.getRegStations();
+        WSOutput();
         
         Runnable r = new MyRunnable();
         new Thread(r).start();
@@ -69,18 +60,26 @@ public class UserClient extends javax.swing.JFrame {
         while(true){
 
             try {
-                getData();
+
+                if(!(onlineList.getSelectedValue() == null))
+                { 
+                    DS.getData();
+                }
+                DS.getStations(false);
+
                 
                 try { TimeUnit.SECONDS.sleep(1); }
                 catch (Exception e) {}
+                
+                
             }
             catch(IOException e){}
-        
+            
+            
         }
     
     }
-
-    //01158463558 //0758821881
+    
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -97,14 +96,14 @@ public class UserClient extends javax.swing.JFrame {
         TemperatureOutputBox = new javax.swing.JTextField();
         HumidityOutputBox = new javax.swing.JTextField();
         jScrollPane2 = new javax.swing.JScrollPane();
-        jList1 = new javax.swing.JList<>();
+        onlineList = new javax.swing.JList<>();
         jLabel7 = new javax.swing.JLabel();
         jButton1 = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
         jScrollPane3 = new javax.swing.JScrollPane();
-        jList2 = new javax.swing.JList<>();
-        jButton2 = new javax.swing.JButton();
-        jButton3 = new javax.swing.JButton();
+        AllWSList = new javax.swing.JList<>();
+        RegisterButton = new javax.swing.JButton();
+        RemoveButton = new javax.swing.JButton();
         jSeparator1 = new javax.swing.JSeparator();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -181,7 +180,7 @@ public class UserClient extends javax.swing.JFrame {
             }
         });
 
-        jScrollPane2.setViewportView(jList1);
+        jScrollPane2.setViewportView(onlineList);
 
         jLabel7.setText("Available Stations");
 
@@ -196,13 +195,28 @@ public class UserClient extends javax.swing.JFrame {
 
         jLabel1.setText("Registered Stations");
 
-        jScrollPane3.setViewportView(jList2);
+        AllWSList.addComponentListener(new java.awt.event.ComponentAdapter() {
+            public void componentResized(java.awt.event.ComponentEvent evt) {
+                AllWSListComponentResized(evt);
+            }
+        });
+        jScrollPane3.setViewportView(AllWSList);
 
-        jButton2.setText("Register");
-        jButton2.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        RegisterButton.setText("Register");
+        RegisterButton.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        RegisterButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                RegisterButtonActionPerformed(evt);
+            }
+        });
 
-        jButton3.setText("Remove");
-        jButton3.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        RemoveButton.setText("Remove");
+        RemoveButton.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        RemoveButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                RemoveButtonActionPerformed(evt);
+            }
+        });
 
         jSeparator1.setOrientation(javax.swing.SwingConstants.VERTICAL);
         jSeparator1.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
@@ -219,8 +233,8 @@ public class UserClient extends javax.swing.JFrame {
                         .addGap(18, 18, 18)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 144, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addComponent(jButton2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 144, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addComponent(RemoveButton, javax.swing.GroupLayout.PREFERRED_SIZE, 144, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(RegisterButton, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 144, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 144, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(18, 18, 18))
                     .addGroup(layout.createSequentialGroup()
@@ -245,9 +259,9 @@ public class UserClient extends javax.swing.JFrame {
                                 .addComponent(HumidityOutputBox, javax.swing.GroupLayout.PREFERRED_SIZE, 192, javax.swing.GroupLayout.PREFERRED_SIZE))))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(66, 66, 66)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 79, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel7))))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel7)
+                            .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 79, javax.swing.GroupLayout.PREFERRED_SIZE))))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
@@ -288,9 +302,9 @@ public class UserClient extends javax.swing.JFrame {
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(jScrollPane1)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jButton2)
+                                .addComponent(RegisterButton)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jButton3))
+                                .addComponent(RemoveButton))
                             .addComponent(jScrollPane3))))
                 .addContainerGap())
         );
@@ -315,11 +329,7 @@ public class UserClient extends javax.swing.JFrame {
     }//GEN-LAST:event_HumidityOutputBoxActionPerformed
 
     private void WSListValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_WSListValueChanged
-        selected = WSList.getSelectedValue();
-        
-        try{ getData(); }
-        catch (Exception e){ }
-        
+
     }//GEN-LAST:event_WSListValueChanged
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
@@ -339,38 +349,199 @@ public class UserClient extends javax.swing.JFrame {
         
     }//GEN-LAST:event_formWindowStateChanged
 
-    private void getData() throws IOException {
-        dos.writeUTF("Get Data");
-        dos.writeUTF(selected);
+    private void RegisterButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_RegisterButtonActionPerformed
 
-        boolean trueeeee = dis.readBoolean();
+        DS.register();
+        WSOutput();
+        
+    }//GEN-LAST:event_RegisterButtonActionPerformed
 
-        if(trueeeee){
-            dis.readUTF();
-            FieldOutputBox.setText(dis.readUTF());
-            CropOutputBox.setText(dis.readUTF());
-            TemperatureOutputBox.setText(dis.readUTF());                   
-            HumidityOutputBox.setText(dis.readUTF());
+    private void RemoveButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_RemoveButtonActionPerformed
+      
+        DS.remove();
+        WSOutput();
+        
+    }//GEN-LAST:event_RemoveButtonActionPerformed
+
+    private void AllWSListComponentResized(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_AllWSListComponentResized
+        
+    }//GEN-LAST:event_AllWSListComponentResized
+
+    private class DataStreams {
+ 
+    
+        synchronized private void getData() throws IOException {
+ 
+            String s = onlineList.getSelectedValue();
+
+            dos.writeUTF("Get Data");
+
+            dos.writeUTF(s);
+
+            boolean trueeeee = dis.readBoolean();
+
+            if(trueeeee){
+                dis.readUTF();
+
+                FieldOutputBox.setText(dis.readUTF());
+                CropOutputBox.setText(dis.readUTF());
+                TemperatureOutputBox.setText(dis.readUTF());                   
+                HumidityOutputBox.setText(dis.readUTF());
+            }
+            else{
+                resetOutput();
+            }
+
         }
-        else{
+
+        synchronized private void getRegStations() throws IOException{
+
+            dos.writeUTF("Load Stations");
+            DefaultListModel<String> newList = new DefaultListModel<String>();
+
+            dos.writeUTF(id);
+
+            do 
+            {           
+                String WS = dis.readUTF();
+                if(WS.isBlank()) { break; }
+
+                newList.addElement(WS);
+
+            } while(dis.available() > 0);
+
+            WSList.setModel(newList);
+
+        }
+
+        synchronized private void getStations(boolean start) throws IOException {
+       
+            dos.writeUTF("All Stations");
+            dos.writeBoolean(start);
+            boolean t = dis.readBoolean();
+
+
+            if(t){
+
+                DefaultListModel<String> newList = new DefaultListModel<String>();
+
+                int Count = dis.readInt();
+
+                for(int i = 0; i < Count; i++){
+
+                    String WS = dis.readUTF();
+
+                    newList.addElement(WS);
+
+                }
+
+                AllWSList.setModel(newList);
+                WSOutput();
+            }
+        
+        }
+        
+        
+        synchronized private void register(){
+            
+            String s = AllWSList.getSelectedValue();
+            if(s == null) { return; }
+            if(s.isBlank()) { return; }
+
+            try{
+                dos.writeUTF("Add Station");
+
+                dos.writeUTF(id);
+                dos.writeUTF(s);
+
+                if(dis.readBoolean())
+                {
+                    getRegStations();
+                }
+
+
+            }
+            catch (IOException e){}
+            
+            resetOutput();
+        }
+        
+        synchronized private void remove(){
+            
+            String s = WSList.getSelectedValue();
+            if(s == null) { return; }
+            if(s.isBlank()) { return; }
+
+            try {
+                dos.writeUTF("Remove Station");
+
+                dos.writeUTF(id);
+                dos.writeUTF(s);
+
+                if(dis.readBoolean())
+                {
+                    getRegStations();
+
+                    resetOutput();
+                }
+
+            }
+            catch (IOException e){}
+            
+            resetOutput();
+            
+        }
+        
+        private void resetOutput(){
+        
             FieldOutputBox.setText("");
             CropOutputBox.setText("");
             TemperatureOutputBox.setText("");                   
             HumidityOutputBox.setText("");
+        
+        }
+        
+    }
+    
+    private void WSOutput(){
+
+        ListModel model1 = WSList.getModel();
+        ListModel model2 = AllWSList.getModel();
+        
+        List<String> list1 = new ArrayList<String>();
+        List<String> list2 = new ArrayList<String>();
+        
+        for (int i = 0; i < model1.getSize(); i++){
+            list1.add(model1.getElementAt(i).toString());
+        }
+        for (int i = 0; i < model2.getSize(); i++){
+            list2.add(model2.getElementAt(i).toString());
+        }
+        
+
+        DefaultListModel<String> newList = new DefaultListModel<String>();
+        
+        for (String s : list2){
+            if(list1.contains(s)){
+                newList.addElement(s);
+            }
         }
 
+        onlineList.setModel(newList);
+      
     }
-
-
+    
+    
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JList<String> AllWSList;
     private javax.swing.JTextField CropOutputBox;
     private javax.swing.JTextField FieldOutputBox;
     private javax.swing.JTextField HumidityOutputBox;
+    private javax.swing.JButton RegisterButton;
+    private javax.swing.JButton RemoveButton;
     private javax.swing.JTextField TemperatureOutputBox;
     private javax.swing.JList<String> WSList;
     private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
-    private javax.swing.JButton jButton3;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
@@ -378,11 +549,10 @@ public class UserClient extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
-    private javax.swing.JList<String> jList1;
-    private javax.swing.JList<String> jList2;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JSeparator jSeparator1;
+    private javax.swing.JList<String> onlineList;
     // End of variables declaration//GEN-END:variables
 }

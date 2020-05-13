@@ -15,6 +15,8 @@ class ClientHandler extends Thread
     final DataInputStream dis;
     final DataOutputStream dos;
     final Socket s;
+    
+    long wsAdd;
 
     // Constructor
     public ClientHandler(Socket s, DataInputStream dis, DataOutputStream dos)  
@@ -22,6 +24,8 @@ class ClientHandler extends Thread
         this.s = s;
         this.dis = dis;
         this.dos = dos;
+        
+        wsAdd = new File("ws.csv").lastModified();
     } 
   
     @Override
@@ -32,7 +36,7 @@ class ClientHandler extends Thread
             try {
                 
                 String received = dis.readUTF();
-                
+                System.out.println(received);
                 // Login
                 if(received.equals("Register") || received.equals("Login")){
                      
@@ -81,6 +85,21 @@ class ClientHandler extends Thread
                     
                 }
                 
+                // Remove Weather Station to User
+                else if (received.equals("Remove Station")){
+                    
+                    String ID = dis.readUTF();
+                    String[] stationID = { dis.readUTF() };
+                    
+                    File file = new File("user.csv");
+                    if (!file.exists()) { file.createNewFile(); }
+                    
+                    dos.writeBoolean(
+                            removeCSV(file,ID,stationID)
+                    );
+                    
+                }
+                
                 // Loading Weather Stations for User
                 else if (received.equals("Load Stations")){
                     
@@ -103,16 +122,23 @@ class ClientHandler extends Thread
                 // Loading All Weather Stations
                 else if (received.equals("All Stations")){
                     
-                    String ID = dis.readUTF();
-                    
                     File file = new File("ws.csv");
                     if (!file.exists()) { file.createNewFile(); }
+                    boolean start = dis.readBoolean();
+                    boolean add = file.lastModified() != wsAdd;
                     
+                    dos.writeBoolean( (add||start) );
+                    
+                    if( !(add||start)) { continue; }
+                    
+                    System.out.println(true);
+                    
+                    wsAdd = file.lastModified();
                     List<String> data = readAll(file);
                     
-                    dos.writeBoolean(data.size() > 0);
+                    dos.writeInt(data.size());
                     
-                    //if (data.size() < 3){ dos.writeUTF(""); continue; }
+                    if (data.isEmpty()) { dos.writeUTF(""); continue; }
 
                     for(String s : data)
                     {
@@ -126,7 +152,7 @@ class ClientHandler extends Thread
                 else if (received.equals("Get Data")) {
                     
                     String stationID = dis.readUTF();
-                    
+                    System.out.println(stationID);
                     File file = new File("WSData.csv");
                     if (!file.exists()) { file.createNewFile(); }
                     
@@ -141,6 +167,12 @@ class ClientHandler extends Thread
                         for(String current : Data)
                             { dos.writeUTF(current); }
                     }
+                }
+                
+                else if (received.equals("test")) {
+                    
+                    dos.writeBoolean(true);
+                    
                 }
                 
             
@@ -276,6 +308,61 @@ class ClientHandler extends Thread
             
             if (add)
                 { newLine += "," + current; }
+        }
+        
+        if (newLine.equals(oldLine))
+        {
+            return false;
+        }
+
+      
+        fileContents = fileContents.replaceAll(oldLine, newLine);
+      
+        FileWriter writer = new FileWriter(file);
+
+        writer.append(fileContents);
+        writer.flush();
+        
+        writer.close();
+        
+        return true;
+    }
+    
+    private boolean removeCSV(File file, String ID, String[] WS) throws IOException {
+   
+        String oldLine = "";
+      
+        Scanner sc = new Scanner(file);
+        StringBuffer buffer = new StringBuffer();
+      
+        while (sc.hasNextLine()) {
+            String next = sc.nextLine();
+            buffer.append(next + System.lineSeparator());
+            
+            String[] data = next.split(",");
+            if(data[0].equals(ID)){ oldLine = next; }
+        }
+        String fileContents = buffer.toString();     
+        
+        sc.close();
+        
+      
+        String newLine = "";
+        String[] elements = oldLine.split(",");
+        newLine += elements[0] + "," + elements[1];
+        
+        for (String current : WS)
+        {
+
+   
+            for(int i = 2; i < elements.length; i++)
+            {
+                if (!current.equals(elements[i])) { 
+                    newLine += "," + elements[i];
+                }
+            }
+            
+
         }
         
         if (newLine.equals(oldLine))
