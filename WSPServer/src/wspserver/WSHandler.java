@@ -106,6 +106,50 @@ class WSHandler extends Thread
                 }
                 
                 
+                
+                // Loading All Weather Stations
+                else if (received.equals("All Stations")){
+                    
+                    File file = new File("ws.csv");
+                    if (!file.exists()) { file.createNewFile(); }
+
+                    List<String[]> data = readAll(file);
+                    
+                    dos.writeInt(data.size());
+                    
+                    //if (data.isEmpty()) { dos.writeUTF(""); continue; }
+
+                    for(String[] s : data)
+                    {
+                        dos.writeUTF(s[0]);
+                    }
+                
+                }
+                
+                
+                //
+                else if (received.equals("Add Station")){
+                    
+                    File file = new File("ws.csv");
+                    if (!file.exists()) { file.createNewFile(); }
+                    
+                    String ID = dis.readUTF();
+                    
+                    dos.writeBoolean(addWS(file,ID));
+                    
+                }
+                
+                else if (received.equals("Remove Station")){
+                    
+                    File file = new File("ws.csv");
+                    if (!file.exists()) { file.createNewFile(); }
+                    
+                    String ID = dis.readUTF();
+                    
+                    dos.writeBoolean(removeWS(file,ID));
+                    
+                }
+                
             
             }
             catch(IOException e) {
@@ -337,5 +381,61 @@ class WSHandler extends Thread
         return true;
     }
     
+    private boolean addWS(File file, String ID) throws IOException {
+        
+        List<String[]> l = readAll(file);
+        
+        for(String[] s : l)
+        {
+            if(s[0].equals(ID))
+            {
+                return false;
+            }
+        }
+        
+        FileWriter csvWriter = new FileWriter(file, true);
+        
+        csvWriter.append("\n");
+        csvWriter.append(ID);
+        
+        csvWriter.close();
+        
+        return true;
+        
+    }
+    
+    private boolean removeWS(File file, String ID) throws IOException {
+      
+        Scanner sc = new Scanner(file);
+        List<String> L = new ArrayList<String>();
+      
+        while (sc.hasNextLine()) {
+            String next = sc.nextLine();
+            
+            if(!next.equals(ID))
+            {
+                L.add(next);
+                if(sc.hasNextLine()) { L.add("\n"); }
+            }
+            
+        } 
+        
+        sc.close();
+
+
+      
+        FileWriter writer = new FileWriter(file);
+        
+        for(String s : L){
+            writer.append(s);
+        }
+        
+        writer.flush();
+        
+        writer.close();
+        
+        return true;
+
+    }
 } 
 
