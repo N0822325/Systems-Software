@@ -1,4 +1,4 @@
-package wspclient1;
+package wspuserclient1;
 
 import javax.swing.JOptionPane;
 import javax.swing.JDialog;

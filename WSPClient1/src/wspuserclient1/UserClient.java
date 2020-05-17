@@ -1,4 +1,4 @@
-package wspclient1;
+package wspuserclient1;
 
 import java.util.*;
 import java.net.*; 
@@ -106,7 +106,7 @@ public class UserClient extends javax.swing.JFrame {
         RemoveButton = new javax.swing.JButton();
         jSeparator1 = new javax.swing.JSeparator();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
         setTitle("User Client");
         setResizable(false);
         addComponentListener(new java.awt.event.ComponentAdapter() {

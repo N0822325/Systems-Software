@@ -1,41 +1,44 @@
-package wspclient1;
+package wspwsclient1;
 
 import java.net.*; 
 import java.io.*; 
 import java.util.Scanner;
+import java.util.*;
+
 import javax.swing.JOptionPane;
+import javax.swing.JDialog;
 
-// User Client 
+// Weather Station Client
 
-public class WSPClient1 {
+public class WSClient1 {
 
- public static void main(String[] args) throws IOException  
+    public static void main(String[] args) throws IOException  
     {
         
-        boolean run = true;
         
-        while(run){
+        
+        while(true){
             
             try
-            { 
+            {
                 Scanner scn = new Scanner(System.in);
 
                 // getting localhost ip 
                 InetAddress ip = InetAddress.getByName("localhost"); 
 
                 // establish the connection with server port 9090 
-                Socket s = new Socket(ip, 9090);
+                Socket s = new Socket(ip, 9091);
 
                 // obtaining input and out streams 
                 DataInputStream dis = new DataInputStream(s.getInputStream()); 
                 DataOutputStream dos = new DataOutputStream(s.getOutputStream());
-
-                // Setup gui form
-                new UserLogin("user",dis,dos).setVisible(true);;
                 
                 
-                run = false;
-
+                
+                new WClient(dis,dos).setVisible(true);
+                
+                
+                break;
                 // closing resources 
                 //scn.close();
                 //dis.close();
@@ -47,9 +50,16 @@ public class WSPClient1 {
                 int response = JOptionPane.showOptionDialog(null, "Server is Offline", "Connection Error",
                     JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE,
                     null, Options, Options[0]);
+                
+                if(response == 1)
+                    { break; }
+                    
+            }
+            
+            
+        } 
+        
+    }
+  
+}
 
-                run = (response == 0)? true : false;
-            } 
-        }
-    } 
-} 
