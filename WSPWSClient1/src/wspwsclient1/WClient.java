@@ -58,12 +58,13 @@ public class WClient extends javax.swing.JFrame {
 
         // Output Data Loop
         while (true){
-
-            for(String s : WSList) {
-
-                DS.setData(s);
-                
-            }
+            
+            DS.setData(wsID);
+//            for(String s : WSList) {
+//
+//                DS.setData(s);
+//                
+//            }
             
             try { TimeUnit.SECONDS.sleep(10); }
             catch (Exception e) {}

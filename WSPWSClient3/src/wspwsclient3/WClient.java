@@ -19,7 +19,7 @@ public class WClient extends javax.swing.JFrame {
     
     int field = 3;
     String crop = "Potato";
-    String wsID = "WS8";
+    String wsID = "WS3";
     
     List<String> WSList = new ArrayList<String>();
     

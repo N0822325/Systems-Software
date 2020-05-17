@@ -17,9 +17,9 @@ public class WClient extends javax.swing.JFrame {
     
     DataStream DS = new DataStream();
     
-    int field = 5;
+    int field = 12;
     String crop = "Carrot";
-    String wsID = "WS7";
+    String wsID = "WS2";
     
     List<String> WSList = new ArrayList<String>();
     
